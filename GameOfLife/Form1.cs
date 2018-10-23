@@ -12,9 +12,30 @@ namespace GameOfLife
 {
     public partial class Form1 : Form
     {
+        public CCarota[] Carota { get; set; }
+
+        public CLupo[] Lupo { get; set; }
+        public CConiglio[] Coniglio { get; set;}
+
         public Form1()
         {
             InitializeComponent();
+
+            Inizializza();
+            Avvia();
+            Risultati();
+        }
+        public void Inizializza()
+        {
+
+        }
+        public void Avvia()
+        {
+
+        }
+        public void Risultati()
+        {
+
         }
     }
 }
