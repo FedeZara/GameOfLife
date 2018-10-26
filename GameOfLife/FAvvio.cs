@@ -15,17 +15,21 @@ namespace GameOfLife
         private int numConigli;
         private int numLupi;
         private int numCarote;
-        private int intervalloCarote;
         private int wGriglia;
         private int hGriglia;
         public FAvvio()
         {
             InitializeComponent();
+            numCarote = (int)nudCarote.Value;
+            numLupi = (int)nudLupi.Value;
+            numConigli = (int)nudConigli.Value;
+            wGriglia = (int)nudWGriglia.Value;
+            hGriglia = (int)nudHGriglia.Value;
         }
 
         private void btnInizia_Click(object sender, EventArgs e)
         {
-            FSimulazione Gioco = new FSimulazione(wGriglia, hGriglia, numConigli, numLupi, numCarote, intervalloCarote);
+            FSimulazione Gioco = new FSimulazione(wGriglia, hGriglia, numConigli, numLupi, numCarote, (int)nudIntervalloCarote.Value);
             this.Hide();
             Gioco.ShowDialog();
             this.Close();

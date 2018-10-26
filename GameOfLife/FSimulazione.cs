@@ -40,7 +40,8 @@ namespace GameOfLife
         }
         public void Inizializza(int wGriglia, int hGriglia, int numConigli, int numLupi, int numCarote, int intervalloCarote)
         {
-            this.Size = new Size(wGriglia*20, hGriglia*20);
+            this.AutoSize = true;
+            this.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             int[,] Combinazioni = new int[wGriglia * hGriglia, 2];
             int[] indiciCombinazioni = new int[wGriglia * hGriglia];
             for(int x=0; x<wGriglia; x++)
@@ -81,7 +82,7 @@ namespace GameOfLife
         {
             foreach(CElemento e in Elementi)
             {
-                e.Mostra();
+                e.Mostra(pbGriglia);
             }
         }
         public void Avvia()
