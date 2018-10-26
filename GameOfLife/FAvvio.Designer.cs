@@ -39,17 +39,23 @@
             this.nudIntervalloCarote = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
             this.btnInizia = new System.Windows.Forms.Button();
+            this.nudWGriglia = new System.Windows.Forms.NumericUpDown();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.nudHGriglia = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.nudConigli)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudLupi)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudCarote)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudIntervalloCarote)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudWGriglia)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudHGriglia)).BeginInit();
             this.SuspendLayout();
             // 
             // lblTitolo
             // 
             this.lblTitolo.AutoSize = true;
             this.lblTitolo.Font = new System.Drawing.Font("Arial", 72F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTitolo.Location = new System.Drawing.Point(22, 15);
+            this.lblTitolo.Location = new System.Drawing.Point(27, 8);
             this.lblTitolo.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lblTitolo.Name = "lblTitolo";
             this.lblTitolo.Size = new System.Drawing.Size(597, 111);
@@ -60,9 +66,20 @@
             // 
             this.nudConigli.Location = new System.Drawing.Point(156, 166);
             this.nudConigli.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
+            this.nudConigli.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.nudConigli.Name = "nudConigli";
             this.nudConigli.Size = new System.Drawing.Size(145, 29);
             this.nudConigli.TabIndex = 1;
+            this.nudConigli.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudConigli.ValueChanged += new System.EventHandler(this.nud_ValueChanged);
             // 
             // lblNumConigli
             // 
@@ -90,9 +107,20 @@
             // 
             this.nudLupi.Location = new System.Drawing.Point(156, 205);
             this.nudLupi.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
+            this.nudLupi.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.nudLupi.Name = "nudLupi";
             this.nudLupi.Size = new System.Drawing.Size(145, 29);
             this.nudLupi.TabIndex = 3;
+            this.nudLupi.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudLupi.ValueChanged += new System.EventHandler(this.nud_ValueChanged);
             // 
             // lblNumCarote
             // 
@@ -109,9 +137,20 @@
             // 
             this.nudCarote.Location = new System.Drawing.Point(156, 244);
             this.nudCarote.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
+            this.nudCarote.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.nudCarote.Name = "nudCarote";
             this.nudCarote.Size = new System.Drawing.Size(145, 29);
             this.nudCarote.TabIndex = 5;
+            this.nudCarote.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudCarote.ValueChanged += new System.EventHandler(this.nud_ValueChanged);
             // 
             // label1
             // 
@@ -128,9 +167,19 @@
             // 
             this.nudIntervalloCarote.Location = new System.Drawing.Point(496, 249);
             this.nudIntervalloCarote.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
+            this.nudIntervalloCarote.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.nudIntervalloCarote.Name = "nudIntervalloCarote";
             this.nudIntervalloCarote.Size = new System.Drawing.Size(68, 29);
             this.nudIntervalloCarote.TabIndex = 7;
+            this.nudIntervalloCarote.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
             // label2
             // 
@@ -151,6 +200,77 @@
             this.btnInizia.TabIndex = 10;
             this.btnInizia.Text = "Avvia simulazione";
             this.btnInizia.UseVisualStyleBackColor = true;
+            this.btnInizia.Click += new System.EventHandler(this.btnInizia_Click);
+            // 
+            // nudWGriglia
+            // 
+            this.nudWGriglia.Location = new System.Drawing.Point(230, 124);
+            this.nudWGriglia.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
+            this.nudWGriglia.Maximum = new decimal(new int[] {
+            40,
+            0,
+            0,
+            0});
+            this.nudWGriglia.Minimum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.nudWGriglia.Name = "nudWGriglia";
+            this.nudWGriglia.Size = new System.Drawing.Size(60, 29);
+            this.nudWGriglia.TabIndex = 1;
+            this.nudWGriglia.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.nudWGriglia.VisibleChanged += new System.EventHandler(this.nud_ValueChanged);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Arial", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(59, 126);
+            this.label3.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(159, 22);
+            this.label3.TabIndex = 2;
+            this.label3.Text = "Dimensioni griglia";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Arial", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(293, 126);
+            this.label4.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(19, 22);
+            this.label4.TabIndex = 2;
+            this.label4.Text = "x";
+            // 
+            // nudHGriglia
+            // 
+            this.nudHGriglia.Location = new System.Drawing.Point(313, 124);
+            this.nudHGriglia.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
+            this.nudHGriglia.Maximum = new decimal(new int[] {
+            40,
+            0,
+            0,
+            0});
+            this.nudHGriglia.Minimum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.nudHGriglia.Name = "nudHGriglia";
+            this.nudHGriglia.Size = new System.Drawing.Size(60, 29);
+            this.nudHGriglia.TabIndex = 1;
+            this.nudHGriglia.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.nudHGriglia.VisibleChanged += new System.EventHandler(this.nud_ValueChanged);
             // 
             // FAvvio
             // 
@@ -165,6 +285,10 @@
             this.Controls.Add(this.nudCarote);
             this.Controls.Add(this.lblNumLupi);
             this.Controls.Add(this.nudLupi);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.nudHGriglia);
+            this.Controls.Add(this.nudWGriglia);
             this.Controls.Add(this.lblNumConigli);
             this.Controls.Add(this.nudConigli);
             this.Controls.Add(this.lblTitolo);
@@ -176,6 +300,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudLupi)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudCarote)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudIntervalloCarote)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudWGriglia)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudHGriglia)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -194,5 +320,9 @@
         private System.Windows.Forms.NumericUpDown nudIntervalloCarote;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button btnInizia;
+        private System.Windows.Forms.NumericUpDown nudWGriglia;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.NumericUpDown nudHGriglia;
     }
 }

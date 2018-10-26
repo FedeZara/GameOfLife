@@ -45,25 +45,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Avvio.cs">
+    <Compile Include="CConiglio.cs" />
+    <Compile Include="FAvvio.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Avvio.Designer.cs">
-      <DependentUpon>Avvio.cs</DependentUpon>
+    <Compile Include="FAvvio.Designer.cs">
+      <DependentUpon>FAvvio.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form1.cs">
+    <Compile Include="FSimulazione.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="FSimulazione.Designer.cs">
+      <DependentUpon>FSimulazione.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Avvio.resx">
-      <DependentUpon>Avvio.cs</DependentUpon>
+    <EmbeddedResource Include="FAvvio.resx">
+      <DependentUpon>FAvvio.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="FSimulazione.resx">
+      <DependentUpon>FSimulazione.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -73,6 +74,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -86,6 +88,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="img\carota.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="img\coniglio.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="img\lupo.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
