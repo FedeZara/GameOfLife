@@ -7,32 +7,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace GameOfLife
-{
+{ 
+
     public partial class FSimulazione : Form
     {
-        public CCarota[] Carote { get; set; }
+        public CElemento[,] Elementi { get; set; }
+        
+        public static int DimCasella = 30;
+        public static Random rnd { get; set; }
+        private int TimerCarota;
+        private int IntervalloCarote;
 
-        public CLupo[] Lupi { get; set; }
-        public CConiglio[] Conigli { get; set; }
-
-        public CElemento[] Elementi { get; set; }
-
-        public PictureBox[,] pbGriglia { get; set; }
-        public int[,] Griglia { get; set; }
-   
 
         public FSimulazione(int wGriglia, int hGriglia, int numConigli, int numLupi, int numCarote, int intervalloCarote)
         {
             InitializeComponent();
 
-            pbGriglia = new PictureBox[wGriglia, hGriglia];
-            Elementi = new CElemento[numConigli + numLupi + numCarote];
-            Carote = new CCarota[numCarote];
-            Lupi = new CLupo[numLupi];
-            Conigli = new CConiglio[numConigli];
-            Griglia = new int[wGriglia, hGriglia];
+            Elementi = new CElemento[wGriglia,hGriglia];
 
             Inizializza(wGriglia, hGriglia, numConigli, numLupi, numCarote, intervalloCarote);
             Avvia();
@@ -40,6 +34,8 @@ namespace GameOfLife
         }
         public void Inizializza(int wGriglia, int hGriglia, int numConigli, int numLupi, int numCarote, int intervalloCarote)
         {
+            TimerCarota = 0;
+            IntervalloCarote = intervalloCarote;
             this.AutoSize = true;
             this.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             int[,] Combinazioni = new int[wGriglia * hGriglia, 2];
@@ -51,47 +47,103 @@ namespace GameOfLife
                     Combinazioni[y + x * hGriglia, 0] = x;
                     Combinazioni[y + x * hGriglia, 1] = y;
                     indiciCombinazioni[y + x * hGriglia] = y + x * hGriglia;
-                    pbGriglia[x, y] = new PictureBox();
-                    pbGriglia[x, y].Size = new Size(20, 20);
-                    pbGriglia[x, y].Location = new Point(x * 20, y * 20);
-                    pbGriglia[x, y].SizeMode = PictureBoxSizeMode.StretchImage;
-                    this.Controls.Add(pbGriglia[x, y]);
                 }
             }
-            Random rnd = new Random();
+            rnd = new Random();
             indiciCombinazioni = indiciCombinazioni.OrderBy(x => rnd.Next()).ToArray();
             int i = 0;
             for(int j=0; j<numConigli; j++)
             {
-                Elementi[i] = Conigli[j] = new CConiglio(Combinazioni[indiciCombinazioni[i], 0], Combinazioni[indiciCombinazioni[i], 1]);
+                Elementi[Combinazioni[indiciCombinazioni[i], 0], Combinazioni[indiciCombinazioni[i], 1]] = new CConiglio(Combinazioni[indiciCombinazioni[i], 0], Combinazioni[indiciCombinazioni[i], 1]);
                 i++;
             }
             for (int j = 0; j < numLupi; j++)
             {
-                Elementi[i] = Lupi[j] = new CLupo(Combinazioni[indiciCombinazioni[i], 0], Combinazioni[indiciCombinazioni[i], 1]);
+                Elementi[Combinazioni[indiciCombinazioni[i], 0], Combinazioni[indiciCombinazioni[i], 1]] = new CLupo(Combinazioni[indiciCombinazioni[i], 0], Combinazioni[indiciCombinazioni[i], 1]);
                 i++;
             }
             for (int j = 0; j < numCarote; j++)
             {
-                Elementi[i] = Carote[j] = new CCarota(Combinazioni[indiciCombinazioni[i], 0], Combinazioni[indiciCombinazioni[i], 1]);
+                Elementi[Combinazioni[indiciCombinazioni[i], 0], Combinazioni[indiciCombinazioni[i], 1]] = new CCarota(Combinazioni[indiciCombinazioni[i], 0], Combinazioni[indiciCombinazioni[i], 1]);
                 i++;
             }
-           
-        }
-        public void MostraGriglia()
-        {
-            foreach(CElemento e in Elementi)
+
+            for (int x = 0; x < Elementi.GetLength(0); x++)
             {
-                e.Mostra(pbGriglia);
+                for (int y = 0; y < Elementi.GetLength(1); y++)
+                {
+                    if (!(Elementi[x, y] is null))
+                    {
+                        this.Controls.Add(Elementi[x, y].PB);
+                    }
+                }
             }
         }
+
         public void Avvia()
         {
-            MostraGriglia();
+            timerSimulazione.Start();
         }
         public void Risultati()
         {
 
+        }
+
+        private void TimerStep(object sender, EventArgs e)
+        {
+            TimerCarota++;
+            if(TimerCarota == IntervalloCarote)
+            {
+                TimerCarota = 0;
+                int x, y;
+
+                do
+                {
+                    x = rnd.Next(0, Elementi.GetLength(0));
+                    y = rnd.Next(0, Elementi.GetLength(1));
+                }
+                while (!(Elementi[x, y] is null));
+                Elementi[x, y] = new CCarota(x, y);
+                this.Controls.Add(Elementi[x, y].PB);
+            }
+            bool[,] Occupato = new bool[Elementi.GetLength(0), Elementi.GetLength(1)];
+            for (int x = 0; x < Elementi.GetLength(0); x++)
+            {
+                for (int y = 0; y < Elementi.GetLength(1); y++)
+                {
+                    if (Elementi[x, y] is CAnimale)
+                    {
+                        (Elementi[x, y] as CAnimale).Muovi(Elementi, Occupato);
+                    }
+                }
+            }
+
+            CElemento[,] NuoviElementi = new CElemento[Elementi.GetLength(0), Elementi.GetLength(1)];
+            for (int x = 0; x < Elementi.GetLength(0); x++)
+            {
+                for (int y = 0; y < Elementi.GetLength(1); y++)
+                {
+                    if (!(Elementi[x, y] is null))
+                    {
+                        int newX = Elementi[x, y].X;
+                        int newY = Elementi[x, y].Y;
+                        NuoviElementi[newX, newY] = Elementi[x, y];
+                    }
+                }
+            }
+
+            Elementi = NuoviElementi;
+
+            for (int x = 0; x < Elementi.GetLength(0); x++)
+            {
+                for (int y = 0; y < Elementi.GetLength(1); y++)
+                {
+                    if (Elementi[x, y] is CAnimale)
+                    {
+                        (Elementi[x, y] as CAnimale).MostraPosizioneCambiata();
+                    }
+                }
+            }
         }
     }
 }
