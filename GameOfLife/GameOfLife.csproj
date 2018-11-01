@@ -52,6 +52,12 @@
     <Compile Include="FAvvio.Designer.cs">
       <DependentUpon>FAvvio.cs</DependentUpon>
     </Compile>
+    <Compile Include="FRisultati.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FRisultati.Designer.cs">
+      <DependentUpon>FRisultati.cs</DependentUpon>
+    </Compile>
     <Compile Include="FSimulazione.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -60,8 +66,17 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UCImpostazioni.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UCImpostazioni.Designer.cs">
+      <DependentUpon>UCImpostazioni.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="FAvvio.resx">
       <DependentUpon>FAvvio.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FRisultati.resx">
+      <DependentUpon>FRisultati.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FSimulazione.resx">
       <DependentUpon>FSimulazione.cs</DependentUpon>
@@ -76,6 +91,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="UCImpostazioni.resx">
+      <DependentUpon>UCImpostazioni.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="ClassDiagram1.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -98,6 +116,30 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="img\lupo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="img\stop.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="img\play-button.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="img\pause.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="img\skip.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="img\pause.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="img\play-button.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="img\skip.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="img\stop.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

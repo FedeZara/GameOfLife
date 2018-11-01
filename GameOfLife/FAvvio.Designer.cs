@@ -54,11 +54,11 @@
             // lblTitolo
             // 
             this.lblTitolo.AutoSize = true;
-            this.lblTitolo.Font = new System.Drawing.Font("Arial", 72F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTitolo.Location = new System.Drawing.Point(27, 8);
+            this.lblTitolo.Font = new System.Drawing.Font("Arial", 48F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTitolo.Location = new System.Drawing.Point(28, 33);
             this.lblTitolo.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lblTitolo.Name = "lblTitolo";
-            this.lblTitolo.Size = new System.Drawing.Size(597, 111);
+            this.lblTitolo.Size = new System.Drawing.Size(400, 75);
             this.lblTitolo.TabIndex = 0;
             this.lblTitolo.Text = "Game of life";
             // 
@@ -75,7 +75,7 @@
             this.nudConigli.Size = new System.Drawing.Size(145, 29);
             this.nudConigli.TabIndex = 1;
             this.nudConigli.Value = new decimal(new int[] {
-            1,
+            30,
             0,
             0,
             0});
@@ -116,7 +116,7 @@
             this.nudLupi.Size = new System.Drawing.Size(145, 29);
             this.nudLupi.TabIndex = 3;
             this.nudLupi.Value = new decimal(new int[] {
-            1,
+            15,
             0,
             0,
             0});
@@ -146,7 +146,7 @@
             this.nudCarote.Size = new System.Drawing.Size(145, 29);
             this.nudCarote.TabIndex = 5;
             this.nudCarote.Value = new decimal(new int[] {
-            1,
+            20,
             0,
             0,
             0});
@@ -176,7 +176,7 @@
             this.nudIntervalloCarote.Size = new System.Drawing.Size(68, 29);
             this.nudIntervalloCarote.TabIndex = 7;
             this.nudIntervalloCarote.Value = new decimal(new int[] {
-            1,
+            2,
             0,
             0,
             0});
@@ -194,7 +194,7 @@
             // 
             // btnInizia
             // 
-            this.btnInizia.Location = new System.Drawing.Point(554, 319);
+            this.btnInizia.Location = new System.Drawing.Point(556, 300);
             this.btnInizia.Name = "btnInizia";
             this.btnInizia.Size = new System.Drawing.Size(191, 32);
             this.btnInizia.TabIndex = 10;
@@ -220,7 +220,7 @@
             this.nudWGriglia.Size = new System.Drawing.Size(60, 29);
             this.nudWGriglia.TabIndex = 1;
             this.nudWGriglia.Value = new decimal(new int[] {
-            5,
+            20,
             0,
             0,
             0});
@@ -253,7 +253,7 @@
             this.nudHGriglia.Location = new System.Drawing.Point(313, 124);
             this.nudHGriglia.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
             this.nudHGriglia.Maximum = new decimal(new int[] {
-            40,
+            25,
             0,
             0,
             0});
@@ -266,7 +266,7 @@
             this.nudHGriglia.Size = new System.Drawing.Size(60, 29);
             this.nudHGriglia.TabIndex = 1;
             this.nudHGriglia.Value = new decimal(new int[] {
-            5,
+            15,
             0,
             0,
             0});
@@ -276,7 +276,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 22F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(803, 372);
+            this.ClientSize = new System.Drawing.Size(803, 350);
             this.Controls.Add(this.btnInizia);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);

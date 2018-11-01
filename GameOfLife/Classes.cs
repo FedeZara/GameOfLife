@@ -19,7 +19,7 @@ namespace GameOfLife
                 {
                     _PB = new PictureBox();
                     _PB.Size = new Size(FSimulazione.DimCasella, FSimulazione.DimCasella);
-                    _PB.Location = new Point(X * FSimulazione.DimCasella, Y * FSimulazione.DimCasella);
+                    _PB.Location = new Point(X * FSimulazione.DimCasella, 60 + Y * FSimulazione.DimCasella);
                     _PB.SizeMode = PictureBoxSizeMode.StretchImage;
                     _PB.Image = Immagine;
                 }
@@ -41,7 +41,7 @@ namespace GameOfLife
         {
             get
             {
-                base.PB.BackColor = Color.FromArgb(50, 0, 255, 0);
+                base.PB.BackColor = Color.FromArgb(100, 0, 255, 0);
                 return _PB;
             }
         }
@@ -49,23 +49,12 @@ namespace GameOfLife
         public abstract void Muovi(CElemento[,] Elementi, bool[,] Occupato);
         public void MostraPosizioneCambiata()
         {
-            PB.Location = new Point(X * FSimulazione.DimCasella, Y * FSimulazione.DimCasella);
-            if(Vita == 5)
-                PB.BackColor = Color.FromArgb(50, 0, 255, 0);
-            else if (Vita == 4)
-                PB.BackColor = Color.FromArgb(50, 51, 204, 0);
-            else if(Vita == 3)
-                PB.BackColor = Color.FromArgb(50, 102, 153, 0);
-            else if (Vita == 2)
-                PB.BackColor = Color.FromArgb(50, 153, 102, 0);
-            else if (Vita == 1)
-                PB.BackColor = Color.FromArgb(50, 204, 51, 0);
-            else if (Vita == 0)
-                PB.BackColor = Color.FromArgb(50, 255, 0, 0);
+            PB.Location = new Point(X * FSimulazione.DimCasella, 60 + Y * FSimulazione.DimCasella);
+            PB.BackColor = Color.FromArgb(100, (10 - Vita) * 25, Vita * 25, 0);
         }
         public CAnimale(int X, int Y) : base(X, Y)
         {
-            Vita = 5;
+            Vita = 10;
         }
     }
     public class CConiglio : CAnimale
@@ -175,7 +164,7 @@ namespace GameOfLife
             }
             if (CarotaTrovata)
             {
-                Vita = 6;
+                Vita = 11;
                 Elementi[newX, newY].PB.Dispose();
                 Elementi[newX, newY] = null;
             }
@@ -304,7 +293,7 @@ namespace GameOfLife
             }
             if (ConiglioTrovato)
             {
-                Vita = 6;
+                Vita = 11;
                 Elementi[newX, newY].PB.Dispose();
                 Elementi[newX, newY] = null;
             }
@@ -331,6 +320,14 @@ namespace GameOfLife
             get
             {
                 return GameOfLife.Properties.Resources.carota;
+            }
+        }
+        public override PictureBox PB
+        {
+            get
+            {
+                base.PB.BackColor = Color.FromArgb(255, 255, 255);
+                return _PB;
             }
         }
         public CCarota(int X, int Y) : base(X, Y)
