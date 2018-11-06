@@ -89,6 +89,7 @@ namespace GameOfLife
         public void Risultati(int ConigliRimasti, int LupiRimasti)
         {
             FRisultati Risultati = new FRisultati(ConigliRimasti, LupiRimasti);
+            this.Hide();
             Risultati.ShowDialog();
             this.Close();
         }
