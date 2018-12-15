@@ -49,8 +49,20 @@ namespace GameOfLife
         public abstract void Muovi(CElemento[,] Elementi, bool[,] Occupato);
         public void MostraPosizioneCambiata()
         {
-            PB.Location = new Point(X * FSimulazione.DimCasella, 60 + Y * FSimulazione.DimCasella);
-            PB.BackColor = Color.FromArgb(100, (10 - Vita) * 25, Vita * 25, 0);
+            if (PB.InvokeRequired)
+            {
+                PB.Invoke(new MethodInvoker(() =>
+                {
+                    PB.Location = new Point(X * FSimulazione.DimCasella, 60 + Y * FSimulazione.DimCasella);
+                    PB.BackColor = Color.FromArgb(100, (10 - Vita) * 25, Vita * 25, 0);
+                }));
+            }
+            else
+            {
+                PB.Location = new Point(X * FSimulazione.DimCasella, 60 + Y * FSimulazione.DimCasella);
+                PB.BackColor = Color.FromArgb(100, (10 - Vita) * 25, Vita * 25, 0);
+            }
+           
         }
         public CAnimale(int X, int Y) : base(X, Y)
         {
@@ -70,7 +82,10 @@ namespace GameOfLife
         {
             if(Vita == 0)
             {
-                this.PB.Dispose();
+                if (this.PB.InvokeRequired)
+                    this.PB.Invoke(new MethodInvoker(() => this.PB.Dispose()));
+                else
+                    this.PB.Dispose();
                 Elementi[X, Y] = null;
                 return;
             }
@@ -165,7 +180,10 @@ namespace GameOfLife
             if (CarotaTrovata)
             {
                 Vita = 11;
-                Elementi[newX, newY].PB.Dispose();
+                if (Elementi[newX, newY].PB.InvokeRequired)
+                    Elementi[newX, newY].PB.Invoke(new MethodInvoker(() => Elementi[newX, newY].PB.Dispose()));
+                else
+                    Elementi[newX, newY].PB.Dispose();
                 Elementi[newX, newY] = null;
             }
             Vita--;
@@ -196,7 +214,10 @@ namespace GameOfLife
         {
             if (Vita == 0)
             {
-                this.PB.Dispose();
+                if (this.PB.InvokeRequired)
+                    this.PB.Invoke(new MethodInvoker(() => this.PB.Dispose()));
+                else
+                    this.PB.Dispose();
                 Elementi[X, Y] = null;
                 return;
             }
@@ -294,7 +315,10 @@ namespace GameOfLife
             if (ConiglioTrovato)
             {
                 Vita = 11;
-                Elementi[newX, newY].PB.Dispose();
+                if (Elementi[newX, newY].PB.InvokeRequired)
+                    Elementi[newX, newY].PB.Invoke(new MethodInvoker(() => Elementi[newX, newY].PB.Dispose()));
+                else
+                    Elementi[newX, newY].PB.Dispose();
                 Elementi[newX, newY] = null;
             }
             Vita--;

@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
@@ -21,6 +22,8 @@ namespace GameOfLife
         private int TimerCarota;
         private int IntervalloCarote;
 
+        private Task CalcoloPosizioniTask;
+
 
         public FSimulazione(int wGriglia, int hGriglia, int numConigli, int numLupi, int numCarote, int intervalloCarote)
         {
@@ -30,6 +33,7 @@ namespace GameOfLife
 
             Inizializza(wGriglia, hGriglia, numConigli, numLupi, numCarote, intervalloCarote);
         }
+
         public void Inizializza(int wGriglia, int hGriglia, int numConigli, int numLupi, int numCarote, int intervalloCarote)
         {
             TimerCarota = 0;
@@ -86,15 +90,27 @@ namespace GameOfLife
             this.Controls.Add(Pannello);
         }
 
+
         public void Risultati(int ConigliRimasti, int LupiRimasti)
         {
-            FRisultati Risultati = new FRisultati(ConigliRimasti, LupiRimasti);
-            this.Hide();
-            Risultati.ShowDialog();
-            this.Close();
+            if (this.InvokeRequired)
+                this.Invoke(new MethodInvoker(() =>
+                {
+                    FRisultati Risultati = new FRisultati(ConigliRimasti, LupiRimasti);
+                    this.Hide();
+                    Risultati.ShowDialog();
+                    this.Close();
+                }));
+            else
+            {
+                FRisultati Risultati = new FRisultati(ConigliRimasti, LupiRimasti);
+                this.Hide();
+                Risultati.ShowDialog();
+                this.Close();
+            }
         }
 
-        public void TimerStep(object sender, EventArgs e)
+        public void CalcoloPosizioni()
         {
             //Inserisce una nuova carota ogni tot (IntervalloCarote) secondi
             TimerCarota++;
@@ -110,15 +126,18 @@ namespace GameOfLife
                 }
                 while (!(Elementi[x, y] is null));
                 Elementi[x, y] = new CCarota(x, y);
-                this.Controls.Add(Elementi[x, y].PB);
+                if (this.InvokeRequired)
+                    this.Invoke(new MethodInvoker(() => this.Controls.Add(Elementi[x, y].PB)));
+                else
+                    this.Controls.Add(Elementi[x, y].PB);
             }
 
             //Calcola una nuova posizione per ogni animale presente nella griglia
             bool[,] Occupato = new bool[Elementi.GetLength(0), Elementi.GetLength(1)];
             int ConigliTrovati = 0, LupiTrovati = 0;
-            for (int x = 0; x < Elementi.GetLength(0); x++)
+            for (int x = 0; x<Elementi.GetLength(0); x++)
             {
-                for (int y = 0; y < Elementi.GetLength(1); y++)
+                for (int y = 0; y<Elementi.GetLength(1); y++)
                 {
                     if (Elementi[x, y] is CAnimale)
                     {
@@ -140,9 +159,9 @@ namespace GameOfLife
             }
 
             CElemento[,] NuoviElementi = new CElemento[Elementi.GetLength(0), Elementi.GetLength(1)];
-            for (int x = 0; x < Elementi.GetLength(0); x++)
+            for (int x = 0; x<Elementi.GetLength(0); x++)
             {
-                for (int y = 0; y < Elementi.GetLength(1); y++)
+                for (int y = 0; y<Elementi.GetLength(1); y++)
                 {
                     if (!(Elementi[x, y] is null))
                     {
@@ -155,9 +174,9 @@ namespace GameOfLife
 
             Elementi = NuoviElementi;
 
-            for (int x = 0; x < Elementi.GetLength(0); x++)
+            for (int x = 0; x<Elementi.GetLength(0); x++)
             {
-                for (int y = 0; y < Elementi.GetLength(1); y++)
+                for (int y = 0; y<Elementi.GetLength(1); y++)
                 {
                     if (Elementi[x, y] is CAnimale)
                     {
@@ -165,6 +184,11 @@ namespace GameOfLife
                     }
                 }
             }
+        }
+        public void TimerStep(object sender, EventArgs e)
+        {
+            CalcoloPosizioniTask?.Wait();
+            CalcoloPosizioniTask = Task.Run(() => CalcoloPosizioni());
         }
         public void Pause()
         {
