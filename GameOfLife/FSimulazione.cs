@@ -79,6 +79,7 @@ namespace GameOfLife
                     }
                 }
             }
+
             Panel Pannello = new Panel();
             Pannello.Location = new Point(0, 0);
             Pannello.Size = new Size(wGriglia * DimCasella, 60);
@@ -116,52 +117,67 @@ namespace GameOfLife
             }
         }
 
-        public void TimerStep(object sender, EventArgs e)
-        {          
-            if(CalcoloPosizioniTask != null)
+        public void AggiornaPosizioni()
+        {
+            CalcoloPosizioniTask.Wait();
+            CElemento[,] NuoviElementi = new CElemento[Elementi.GetLength(0), Elementi.GetLength(1)];
+            for (int x = 0; x < Elementi.GetLength(0); x++)
             {
-                CalcoloPosizioniTask.Wait();
-                CElemento[,] NuoviElementi = new CElemento[Elementi.GetLength(0), Elementi.GetLength(1)];
-                int ConigliTrovati = 0, LupiTrovati = 0;
-                for (int x = 0; x < Elementi.GetLength(0); x++)
+                for (int y = 0; y < Elementi.GetLength(1); y++)
                 {
-                    for (int y = 0; y < Elementi.GetLength(1); y++)
+                    if (!(Elementi[x, y] is null))
                     {
-                        if (!(Elementi[x, y] is null))
+                        if (Elementi[x, y].DaEliminare)
                         {
-                            if (Elementi[x, y].DaEliminare)
-                            {
-                                Controls.Remove(Elementi[x, y].PB);
-                                Elementi[x, y].PB.Dispose();
-                                Elementi[x, y] = null;
-                                continue;
-                            }
-                            int newX = Elementi[x, y].X;
-                            int newY = Elementi[x, y].Y;
-                            NuoviElementi[newX, newY] = Elementi[x, y];
-                            if (Elementi[x, y] is CAnimale)
-                            {
-                                (Elementi[x, y] as CAnimale).MostraPosizioneCambiata();
-
-                                //Verifica se sono rimasti ancora lupi o conigli
-                                if (Elementi[x, y] is CLupo)
-                                    LupiTrovati++;
-                                else if (Elementi[x, y] is CConiglio)
-                                    ConigliTrovati++;
-                            }
+                            Controls.Remove(Elementi[x, y].PB);
+                            Elementi[x, y].PB.Dispose();
+                            Elementi[x, y] = null;
+                            continue;
                         }
+                        int newX = Elementi[x, y].X;
+                        int newY = Elementi[x, y].Y;
+                        NuoviElementi[newX, newY] = Elementi[x, y];
+
+                        (Elementi[x, y] as CAnimale)?.MostraPosizioneCambiata();
+
                     }
                 }
+            }
+            Elementi = NuoviElementi;
+        }
 
-                Elementi = NuoviElementi;
-               
-                if (ConigliTrovati == 0 || LupiTrovati == 0)
+        public void CalcolaNumeroAnimali(out int LupiTrovati, out int ConigliTrovati)
+        {
+            ConigliTrovati = 0;
+            LupiTrovati = 0;
+            for (int x = 0; x < Elementi.GetLength(0); x++)
+            {
+                for (int y = 0; y < Elementi.GetLength(1); y++)
                 {
-                    timerSimulazione.Stop();
-                    Risultati(ConigliTrovati, LupiTrovati);
+                    if (!(Elementi[x, y] is null))
+                    {
+                        //Verifica se sono rimasti ancora lupi o conigli
+                        if (Elementi[x, y] is CLupo)
+                            LupiTrovati++;
+                        else if (Elementi[x, y] is CConiglio)
+                            ConigliTrovati++;
+                    }
                 }
             }
-            
+        }
+        public void VerificaFineSimulazione()
+        {
+            int LupiTrovati, ConigliTrovati;
+            CalcolaNumeroAnimali(out LupiTrovati, out ConigliTrovati);
+            if (ConigliTrovati == 0 || LupiTrovati == 0)
+            {
+                timerSimulazione.Stop();
+                Risultati(ConigliTrovati, LupiTrovati);
+            }
+        }
+
+        public void AggiungiNuovaCarota()
+        {
             //Inserisce una nuova carota ogni tot (IntervalloCarote) secondi
             TimerCarota++;
             if (TimerCarota == IntervalloCarote)
@@ -178,8 +194,13 @@ namespace GameOfLife
                 Elementi[x, y] = new CCarota(x, y);
                 this.Controls.Add(Elementi[x, y].PB);
             }
+        }
 
-
+        public void TimerStep(object sender, EventArgs e)
+        {          
+            AggiornaPosizioni();
+            VerificaFineSimulazione();  
+            AggiungiNuovaCarota();
             CalcoloPosizioniTask = Task.Run(() => CalcoloPosizioni());
         }
         public void Pause()
@@ -195,17 +216,9 @@ namespace GameOfLife
         public void Stop()
         {
             timerSimulazione.Stop();
-            int ConigliTrovati = 0, LupiTrovati = 0;
-            for (int x = 0; x < Elementi.GetLength(0); x++)
-            {
-                for (int y = 0; y < Elementi.GetLength(1); y++)
-                {
-                    if (Elementi[x, y] is CLupo)
-                        LupiTrovati++;
-                    else if (Elementi[x, y] is CConiglio)
-                        ConigliTrovati++;
-                }
-            }
+
+            int LupiTrovati, ConigliTrovati;
+            CalcolaNumeroAnimali(out LupiTrovati, out ConigliTrovati);
 
             Risultati(ConigliTrovati, LupiTrovati);
         }
