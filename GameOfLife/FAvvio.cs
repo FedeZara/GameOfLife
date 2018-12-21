@@ -29,6 +29,11 @@ namespace GameOfLife
 
         private void btnInizia_Click(object sender, EventArgs e)
         {
+            numCarote = (int)nudCarote.Value;
+            numLupi = (int)nudLupi.Value;
+            numConigli = (int)nudConigli.Value;
+            wGriglia = (int)nudWGriglia.Value;
+            hGriglia = (int)nudHGriglia.Value;
             FSimulazione Gioco = new FSimulazione(wGriglia, hGriglia, numConigli, numLupi, numCarote, (int)nudIntervalloCarote.Value);
             this.Hide();
             Gioco.ShowDialog();

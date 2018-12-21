@@ -80,6 +80,7 @@
             0,
             0});
             this.nudConigli.ValueChanged += new System.EventHandler(this.nud_ValueChanged);
+            this.nudConigli.VisibleChanged += new System.EventHandler(this.nud_ValueChanged);
             // 
             // lblNumConigli
             // 
@@ -121,6 +122,7 @@
             0,
             0});
             this.nudLupi.ValueChanged += new System.EventHandler(this.nud_ValueChanged);
+            this.nudLupi.VisibleChanged += new System.EventHandler(this.nud_ValueChanged);
             // 
             // lblNumCarote
             // 
@@ -151,6 +153,7 @@
             0,
             0});
             this.nudCarote.ValueChanged += new System.EventHandler(this.nud_ValueChanged);
+            this.nudCarote.VisibleChanged += new System.EventHandler(this.nud_ValueChanged);
             // 
             // label1
             // 
@@ -224,6 +227,7 @@
             0,
             0,
             0});
+            this.nudWGriglia.ValueChanged += new System.EventHandler(this.nud_ValueChanged);
             this.nudWGriglia.VisibleChanged += new System.EventHandler(this.nud_ValueChanged);
             // 
             // label3
@@ -270,6 +274,7 @@
             0,
             0,
             0});
+            this.nudHGriglia.ValueChanged += new System.EventHandler(this.nud_ValueChanged);
             this.nudHGriglia.VisibleChanged += new System.EventHandler(this.nud_ValueChanged);
             // 
             // FAvvio
