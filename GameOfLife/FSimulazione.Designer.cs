@@ -28,14 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.timerSimulazione = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
-            // 
-            // timerSimulazione
-            // 
-            this.timerSimulazione.Interval = 1000;
-            this.timerSimulazione.Tick += new System.EventHandler(this.TimerStep);
             // 
             // FSimulazione
             // 
@@ -51,8 +44,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Timer timerSimulazione;
     }
 }
 

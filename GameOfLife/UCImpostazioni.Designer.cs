@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.btnPlayPause = new System.Windows.Forms.Button();
-            this.btnNext = new System.Windows.Forms.Button();
             this.btnStop = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
@@ -44,22 +43,11 @@
             this.btnPlayPause.UseVisualStyleBackColor = false;
             this.btnPlayPause.Click += new System.EventHandler(this.btnPlayPause_Click);
             // 
-            // btnNext
-            // 
-            this.btnNext.BackColor = System.Drawing.Color.White;
-            this.btnNext.Image = global::GameOfLife.Properties.Resources.skip;
-            this.btnNext.Location = new System.Drawing.Point(59, 14);
-            this.btnNext.Name = "btnNext";
-            this.btnNext.Size = new System.Drawing.Size(32, 32);
-            this.btnNext.TabIndex = 0;
-            this.btnNext.UseVisualStyleBackColor = false;
-            this.btnNext.Click += new System.EventHandler(this.btnNext_Click);
-            // 
             // btnStop
             // 
             this.btnStop.BackColor = System.Drawing.Color.White;
             this.btnStop.Image = global::GameOfLife.Properties.Resources.stop;
-            this.btnStop.Location = new System.Drawing.Point(97, 14);
+            this.btnStop.Location = new System.Drawing.Point(59, 14);
             this.btnStop.Name = "btnStop";
             this.btnStop.Size = new System.Drawing.Size(32, 32);
             this.btnStop.TabIndex = 0;
@@ -71,11 +59,10 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.White;
             this.Controls.Add(this.btnStop);
-            this.Controls.Add(this.btnNext);
             this.Controls.Add(this.btnPlayPause);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "UCImpostazioni";
-            this.Size = new System.Drawing.Size(150, 60);
+            this.Size = new System.Drawing.Size(110, 60);
             this.ResumeLayout(false);
 
         }
@@ -83,7 +70,6 @@
         #endregion
 
         private System.Windows.Forms.Button btnPlayPause;
-        private System.Windows.Forms.Button btnNext;
         private System.Windows.Forms.Button btnStop;
     }
 }
