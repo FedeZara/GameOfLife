@@ -15,7 +15,7 @@ namespace GameOfLife
     public partial class FSimulazione : Form
     {         
         public Griglia Griglia { get; set; }
-        public const int DimCasella = 30;
+        public const int DimCasella = 40;
         private int IntervalloCarote;
 
         public PictureBox[,] CellePB;
@@ -103,8 +103,9 @@ namespace GameOfLife
             }
         }
 
-        public void Risultati(object sender, FineSimulazioneEventArgs e)
+        public async void Risultati(object sender, FineSimulazioneEventArgs e)
         {
+            await Task.Delay(1000);
             FRisultati Risultati = new FRisultati(e.ConigliRimasti, e.LupiRimasti);
             this.Hide();
             Risultati.ShowDialog();

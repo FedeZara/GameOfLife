@@ -140,8 +140,6 @@ namespace GameOfLife
             }
 
             InserisciCarote();
-
-            SimulazioneInPausa = false;
         }
 
         public async Task DiminuisciNumConigli()
@@ -336,15 +334,8 @@ namespace GameOfLife
             if (CiboTrovato && ciboPresenteNellaCella && griglia.rnd.Next(0, 100) < 50)
             {
                 // non occorre più avere l'accesso della cella precedente
+                griglia.Celle[newX, newY].RilasciaAccesso();
 
-                try
-                {
-                    griglia.Celle[newX, newY].RilasciaAccesso();
-                }
-                catch (Exception e)
-                {
-
-                }
                 newX = xCella;
                 newY = yCella;
             }
@@ -355,14 +346,7 @@ namespace GameOfLife
             {
                 // se era già stata selezionata un'altra cella come prossima cella, rilascia l'accesso
                 if (NuovaPosizioneTrovata)
-                    try
-                    {
-                        griglia.Celle[newX, newY].RilasciaAccesso();
-                    }
-                    catch (Exception e)
-                    {
-
-                    }
+                    griglia.Celle[newX, newY].RilasciaAccesso();
 
                 newX = xCella;
                 newY = yCella;
@@ -377,14 +361,7 @@ namespace GameOfLife
             {
                 // se era già stata selezionata un'altra cella come prossima cella, rilascia l'accesso
                 if (NuovaPosizioneTrovata)
-                    try
-                    {
-                        griglia.Celle[newX, newY].RilasciaAccesso();
-                    }
-                    catch (Exception e)
-                    {
-
-                    }
+                    griglia.Celle[newX, newY].RilasciaAccesso();
 
                 newX = xCella;
                 newY = yCella;
@@ -393,14 +370,7 @@ namespace GameOfLife
 
             // nel caso la cella in analisi non sia stata segnata come prossima cella, il suo accesso si può rilasciare
             if (newX != xCella || newY != yCella)
-                try
-                {
-                    griglia.Celle[xCella, yCella].RilasciaAccesso();
-                }
-                catch (Exception e)
-                {
-
-                }
+                griglia.Celle[xCella, yCella].RilasciaAccesso();
         }
         public async void Muovi()
         {
@@ -419,34 +389,25 @@ namespace GameOfLife
 
                     await griglia.Celle[X, Y].OttieniAccessoAsync();
 
+                    var animale = griglia.Celle[X, Y].Elemento as CAnimale;
+                    if (animale != null)
+                    {
+                        if(animale.Vita == 0)
+                        {
+                            griglia.Celle[X, Y].Elimina();
+                            await DiminuisciContatore();
+                        }
+                    }
+
                     if (griglia.Celle[X, Y].Elemento != this)
                     {
-                        try
-                        {
-                            griglia.Celle[X, Y].RilasciaAccesso();
-                        }
-                        catch (Exception e)
-                        {
-
-                        }
+                        griglia.Celle[X, Y].RilasciaAccesso();
+                        
                         if (Y > 0)
-                            try
-                            {
-                                griglia.Celle[X, Y - 1].RilasciaAccesso();
-                            }
-                            catch (Exception e)
-                            {
-
-                            }
+                            griglia.Celle[X, Y - 1].RilasciaAccesso();
                         if (X > 0)
-                            try
-                            {
-                                griglia.Celle[X - 1, Y].RilasciaAccesso();
-                            }
-                            catch (Exception e)
-                            {
+                            griglia.Celle[X - 1, Y].RilasciaAccesso();
 
-                            }
                         return;
                     }
 
@@ -470,57 +431,41 @@ namespace GameOfLife
                         AnalizzaCella(X - 1, Y, ref newX, ref newY, ref NuovaPosizioneTrovata, ref CiboTrovato);
                     }
 
-
                     if (X < griglia.Celle.GetLength(0) - 1)
                     {
                         AnalizzaCella(X + 1, Y, ref newX, ref newY, ref NuovaPosizioneTrovata, ref CiboTrovato);
                     }
-
 
                     if (Y < griglia.Celle.GetLength(1) - 1)
                     {
                         AnalizzaCella(X, Y + 1, ref newX, ref newY, ref NuovaPosizioneTrovata, ref CiboTrovato);
                     }
 
-                    if (CiboTrovato)
-                    {
-                        Vita = 10;
-                        griglia.Celle[newX, newY].Elimina();
-                        await DiminuisciContatoreCibo();
-                    }
+                    
 
                     if (NuovaPosizioneTrovata)
                     {
                         int oldX, oldY;
-                        griglia.Celle[newX, newY].Elemento = this;
-                        griglia.Celle[newX, newY].AggiornaCella();
-                        griglia.Celle[X, Y].Elimina();
                         oldX = X;
                         oldY = Y;
                         X = newX;
                         Y = newY;
-                        try
+                        if (CiboTrovato)
                         {
-                            griglia.Celle[oldX, oldY].RilasciaAccesso();
-                            griglia.Celle[X, Y].RilasciaAccesso();
+                            await vitaMutex.WaitAsync();
+                            Vita = 10;
+                            vitaMutex.Release();
+                            await DiminuisciContatoreCibo();
                         }
-                        catch(Exception e)
-                        {
-
-                        }
-
+                        griglia.Celle[X, Y].Elemento = this;
+                        griglia.Celle[X, Y].AggiornaCella();
+                        griglia.Celle[oldX, oldY].Elimina();
+                        griglia.Celle[oldX, oldY].RilasciaAccesso();
+                        griglia.Celle[X, Y].RilasciaAccesso();
                     }
                     else
                     {
-                        try
-                        {
-                            griglia.Celle[X, Y].RilasciaAccesso();
-                        }
-                        catch (Exception e)
-                        {
-
-                        }
-
+                        griglia.Celle[X, Y].RilasciaAccesso();
                     }
                 }   
 
@@ -541,48 +486,13 @@ namespace GameOfLife
                 {
                     await vitaMutex.WaitAsync();
                     Vita--;
+                    vitaMutex.Release();
                     int a = X, b = Y;
-                    await griglia.Celle[X, Y].OttieniAccessoAsync();
                     griglia.Celle[X, Y].AggiornaCella();
-                    try
-                    {
-                        griglia.Celle[X, Y].RilasciaAccesso();
-                    }
-                    catch (Exception e)
-                    {
-
-                    }
 
                     if (Vita == 0)
                     {
-                        await griglia.Celle[X, Y].OttieniAccessoAsync();
-                        griglia.Celle[X, Y].Elimina();
-                        try
-                        {
-                            griglia.Celle[X, Y].RilasciaAccesso();
-                        }
-                        catch (Exception e)
-                        {
-
-                        }
-                        try
-                        {
-                            vitaMutex.Release();
-                        }
-                        catch (Exception e)
-                        {
-
-                        }
-                        await DiminuisciContatore();
                         return;
-                    }
-                    try
-                    {
-                        vitaMutex.Release();
-                    }
-                    catch (Exception e)
-                    {
-
                     }
                 }
                 

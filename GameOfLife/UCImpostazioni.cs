@@ -16,7 +16,7 @@ namespace GameOfLife
         public UCImpostazioni()
         {
             InitializeComponent();
-            InEsecuzione = true;
+            InEsecuzione = false;
         }
 
         public event EventHandler Pausa;
