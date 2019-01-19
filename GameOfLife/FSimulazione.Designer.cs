@@ -39,6 +39,7 @@
             this.MinimumSize = new System.Drawing.Size(1, 1);
             this.Name = "FSimulazione";
             this.Text = "Game of life";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FSimulazione_FormClosing);
             this.ResumeLayout(false);
 
         }

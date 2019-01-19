@@ -16,29 +16,32 @@ namespace GameOfLife
         public UCImpostazioni()
         {
             InitializeComponent();
-            InEsecuzione = false;
+            InEsecuzione = true;
         }
 
+        public event EventHandler Pausa;
+        public event EventHandler Avvia;
+        public event EventHandler Stoppa;
         private void btnPlayPause_Click(object sender, EventArgs e)
         {
             if (InEsecuzione)
             {
                 btnPlayPause.Image = GameOfLife.Properties.Resources.play_button;
-                
-               
+
+                Pausa?.Invoke(this, null);
             }
             else
             {
                 btnPlayPause.Image = GameOfLife.Properties.Resources.pause;
-                
-                
+
+                Avvia?.Invoke(this, null);
             }
             InEsecuzione = !InEsecuzione;
         }
 
         private void btnStop_Click(object sender, EventArgs e)
         {
-            
+            Stoppa?.Invoke(this, null);
         }
     }
 }

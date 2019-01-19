@@ -76,6 +76,7 @@ namespace GameOfLife
         public CCella[,] Celle { get; set; }
         public int Larghezza { get; set; }
         public int Altezza { get; set; }
+        private SemaphoreQueue simulazioneFinitaMutex = new SemaphoreQueue(1, 1);
         public bool SimulazioneFinita { get; set; }
         private SemaphoreQueue numConigliMutex = new SemaphoreQueue(1, 1);
         private SemaphoreQueue numLupiMutex = new SemaphoreQueue(1, 1);
@@ -92,6 +93,8 @@ namespace GameOfLife
                 for (int j = 0; j < altezza; j++)
                     Celle[i, j] = new CCella(i, j);
             }
+
+            SimulazioneInPausa = true;
         }
 
         public void Inizializza(int numConigli, int numLupi, int numCarote, int intervalloCarote)
@@ -132,11 +135,13 @@ namespace GameOfLife
 
             foreach(CCella c in Celle)
             {
-                //(c.Elemento as CAnimale)?.DiminuisciVita();
+                (c.Elemento as CAnimale)?.DiminuisciVita();
                 (c.Elemento as CAnimale)?.Muovi();
             }
 
-            //InserisciCarote();
+            InserisciCarote();
+
+            SimulazioneInPausa = false;
         }
 
         public async Task DiminuisciNumConigli()
@@ -147,8 +152,10 @@ namespace GameOfLife
 
             if(NumConigli == 0)
             {
+                await simulazioneFinitaMutex.WaitAsync();
                 SimulazioneFinita = true;
                 OnFineSimulazione(new FineSimulazioneEventArgs(NumConigli, NumLupi));
+                simulazioneFinitaMutex.Release();
             }
 
             numConigliMutex.Release();
@@ -162,8 +169,10 @@ namespace GameOfLife
 
             if (NumLupi == 0)
             {
+                await simulazioneFinitaMutex.WaitAsync();
                 SimulazioneFinita = true;
                 OnFineSimulazione(new FineSimulazioneEventArgs(NumConigli, NumLupi));
+                simulazioneFinitaMutex.Release();
             }
 
             numLupiMutex.Release();
@@ -178,27 +187,53 @@ namespace GameOfLife
                     return;
                 }
 
-                int x, y;
-
-                bool cellaVuotaTrovata = false;
-                while(!cellaVuotaTrovata)
+                if (!SimulazioneInPausa)
                 {
-                    x = rnd.Next(0, Celle.GetLength(0));
-                    y = rnd.Next(0, Celle.GetLength(1));
+                    int x, y;
 
-                    await Celle[x, y].OttieniAccessoAsync();
-                    if(Celle[x,y].Elemento == null)
+                    bool cellaVuotaTrovata = false;
+                    while (!cellaVuotaTrovata)
                     {
-                        cellaVuotaTrovata = true;
-                        Celle[x, y].Elemento = new CCarota(x, y, this);
-                        Celle[x, y].AggiornaCella();
-                    }
-                    Celle[x, y].RilasciaAccesso();
-                }
+                        x = rnd.Next(0, Celle.GetLength(0));
+                        y = rnd.Next(0, Celle.GetLength(1));
 
+                        await Celle[x, y].OttieniAccessoAsync();
+                        if (Celle[x, y].Elemento == null)
+                        {
+                            cellaVuotaTrovata = true;
+                            Celle[x, y].Elemento = new CCarota(x, y, this);
+                            Celle[x, y].AggiornaCella();
+                        }
+                        try
+                        {
+                            Celle[x, y].RilasciaAccesso();
+                        }
+                        catch(Exception e)
+                        {
+
+                        }
+                    }
+                }
 
                 await Task.Delay(intervalloCarote);
             }
+        }
+
+        public bool SimulazioneInPausa { get; set; }
+        public void Avvia()
+        {
+            SimulazioneInPausa = false;
+        }
+
+        public void Pausa()
+        {
+            SimulazioneInPausa = true;
+        }
+
+        public void Stoppa()
+        {
+            SimulazioneFinita = true;
+            OnFineSimulazione(new FineSimulazioneEventArgs(NumConigli, NumLupi));
         }
 
         private void OnFineSimulazione(FineSimulazioneEventArgs e)
@@ -287,102 +322,85 @@ namespace GameOfLife
     }
     public abstract class CAnimale : CElemento
     {
+        public SemaphoreQueue vitaMutex = new SemaphoreQueue(1, 1);
         public int Vita { get; set; }
         public CAnimale(int X, int Y, Griglia griglia) : base(X, Y, griglia) { Vita = 10; }
 
-        public async Task AnalizzaCella(int xCella, int yCella, CInformazioni informazioni)
+        public void AnalizzaCella(int xCella, int yCella, ref int newX, ref int newY, ref bool NuovaPosizioneTrovata, ref bool CiboTrovato)
         {
-            // rilascia l'accesso dell'elemento per permettere ad altri Task di ottenerlo
-            if (informazioni.AccessoOttenuto)
-            {
-                griglia.Celle[X, Y].RilasciaAccesso();
-                informazioni.AccessoOttenuto = false;
-            }
-
-            bool asseY = (yCella - Y) != 0;
-
-            // se la riga/colonna è pari richiede l'accesso prima di sè stessa e poi della cella che si sta analizzando
-            // se la riga/colonna è dispari viceversa
-            if ((X % 2 == 0 && !asseY) || (Y % 2 == 1 && asseY))
-            {
-                await griglia.Celle[X, Y].OttieniAccessoAsync();
-
-                // controlla se l'elemento è stato mangiato o se è morto di fame
-                if (griglia.Celle[X, Y].Elemento != this)
-                {
-                    griglia.Celle[X, Y].RilasciaAccesso();
-                    if (informazioni.NuovaPosizioneTrovata)
-                        griglia.Celle[informazioni.newX, informazioni.newY].RilasciaAccesso();
-                    informazioni.Eliminato = true;
-                    return;
-                }
-
-                await griglia.Celle[xCella, yCella].OttieniAccessoAsync();
-            }
-            else
-            {
-                await griglia.Celle[xCella, yCella].OttieniAccessoAsync();
-                await griglia.Celle[X, Y].OttieniAccessoAsync();
-                
-                // controlla se l'elemento è stato mangiato o se è morto di fame
-                if (griglia.Celle[X, Y].Elemento != this)
-                {
-                    griglia.Celle[xCella, yCella].RilasciaAccesso();
-                    griglia.Celle[X, Y].RilasciaAccesso();
-                    if (informazioni.NuovaPosizioneTrovata)
-                        griglia.Celle[informazioni.newX, informazioni.newY].RilasciaAccesso();
-                    informazioni.Eliminato = true;
-                    return;
-                }
-            }
-
-            informazioni.AccessoOttenuto = true;
-
             // controlla se nella cella che si sta analizzando c'è del cibo
             bool ciboPresenteNellaCella = CiboPresenteNellaCella(griglia.Celle[xCella, yCella].Elemento);
 
             // se è già stata trovata una cella vicina con del cibo e la cella in analisi contiene del cibo
             // ha una possibilità del 50% di rendere la cella in analisi la nuova cella verso cui spostarsi
-            if (informazioni.CiboTrovato && ciboPresenteNellaCella && griglia.rnd.Next(0, 100) < 50)
+            if (CiboTrovato && ciboPresenteNellaCella && griglia.rnd.Next(0, 100) < 50)
             {
                 // non occorre più avere l'accesso della cella precedente
-                griglia.Celle[informazioni.newX, informazioni.newY].RilasciaAccesso();
 
-                informazioni.newX = xCella;
-                informazioni.newY = yCella;
+                try
+                {
+                    griglia.Celle[newX, newY].RilasciaAccesso();
+                }
+                catch (Exception e)
+                {
+
+                }
+                newX = xCella;
+                newY = yCella;
             }
 
             // se non è ancora stata trovata una cella vicina con del cibo e la cella in analisi contiene del cibo
             // rendi la cella in analisi la nuova cella verso cui spostarsi
-            else if (!informazioni.CiboTrovato && ciboPresenteNellaCella)
+            else if (!CiboTrovato && ciboPresenteNellaCella)
             {
                 // se era già stata selezionata un'altra cella come prossima cella, rilascia l'accesso
-                if (informazioni.NuovaPosizioneTrovata)
-                    griglia.Celle[informazioni.newX, informazioni.newY].RilasciaAccesso();
+                if (NuovaPosizioneTrovata)
+                    try
+                    {
+                        griglia.Celle[newX, newY].RilasciaAccesso();
+                    }
+                    catch (Exception e)
+                    {
 
-                informazioni.newX = xCella;
-                informazioni.newY = yCella;
-                informazioni.CiboTrovato = true;
-                informazioni.NuovaPosizioneTrovata = true;
+                    }
+
+                newX = xCella;
+                newY = yCella;
+                CiboTrovato = true;
+                NuovaPosizioneTrovata = true;
             }
 
             // se non è stato trovato ancora cibo, la cella in analisi non ne contiene ed è vuota, 
             // segna la cella in analisi come prossima cella se non è stata trovata nessuna nuova posizione
             // oppure segnala con il 50% di probabilità se è già stata trovata un'altra cella verso cui muoversi
-            else if (!informazioni.CiboTrovato && (!informazioni.NuovaPosizioneTrovata || griglia.rnd.Next(0, 100) < 50) && griglia.Celle[xCella, yCella].Elemento == null)
+            else if (!CiboTrovato && (!NuovaPosizioneTrovata || griglia.rnd.Next(0, 100) < 50) && griglia.Celle[xCella, yCella].Elemento == null)
             {
                 // se era già stata selezionata un'altra cella come prossima cella, rilascia l'accesso
-                if (informazioni.NuovaPosizioneTrovata)
-                    griglia.Celle[informazioni.newX, informazioni.newY].RilasciaAccesso();
+                if (NuovaPosizioneTrovata)
+                    try
+                    {
+                        griglia.Celle[newX, newY].RilasciaAccesso();
+                    }
+                    catch (Exception e)
+                    {
 
-                informazioni.newX = xCella;
-                informazioni.newY = yCella;
-                informazioni.NuovaPosizioneTrovata = true;
+                    }
+
+                newX = xCella;
+                newY = yCella;
+                NuovaPosizioneTrovata = true;
             }
 
             // nel caso la cella in analisi non sia stata segnata come prossima cella, il suo accesso si può rilasciare
-            if (informazioni.newX != xCella || informazioni.newY != yCella)
-                griglia.Celle[xCella, yCella].RilasciaAccesso();
+            if (newX != xCella || newY != yCella)
+                try
+                {
+                    griglia.Celle[xCella, yCella].RilasciaAccesso();
+                }
+                catch (Exception e)
+                {
+
+                }
         }
         public async void Muovi()
         {
@@ -391,62 +409,120 @@ namespace GameOfLife
                 if (griglia.SimulazioneFinita)
                     return;
 
-                CInformazioni informazioni = new CInformazioni(false, false, false, -1, -1, false);
-                if (X > 0)
+                if (!griglia.SimulazioneInPausa)
                 {
-                    await AnalizzaCella(X - 1, Y, informazioni);
-                    if (informazioni.Eliminato || griglia.SimulazioneFinita)
+                    if (Y > 0)
+                        await griglia.Celle[X, Y - 1].OttieniAccessoAsync();
+                    if (X > 0)
+                        await griglia.Celle[X - 1, Y].OttieniAccessoAsync();
+
+
+                    await griglia.Celle[X, Y].OttieniAccessoAsync();
+
+                    if (griglia.Celle[X, Y].Elemento != this)
                     {
+                        try
+                        {
+                            griglia.Celle[X, Y].RilasciaAccesso();
+                        }
+                        catch (Exception e)
+                        {
+
+                        }
+                        if (Y > 0)
+                            try
+                            {
+                                griglia.Celle[X, Y - 1].RilasciaAccesso();
+                            }
+                            catch (Exception e)
+                            {
+
+                            }
+                        if (X > 0)
+                            try
+                            {
+                                griglia.Celle[X - 1, Y].RilasciaAccesso();
+                            }
+                            catch (Exception e)
+                            {
+
+                            }
                         return;
                     }
-                }
+
+                    if (X < griglia.Celle.GetLength(0) - 1)
+                        await griglia.Celle[X + 1, Y].OttieniAccessoAsync();
+                    if (Y < griglia.Celle.GetLength(1) - 1)
+                        await griglia.Celle[X, Y + 1].OttieniAccessoAsync();
 
 
-                if (X < griglia.Celle.GetLength(0) - 1)
-                {
-                    await AnalizzaCella(X + 1, Y, informazioni);
-                    if (informazioni.Eliminato || griglia.SimulazioneFinita)
-                        return;
-                }
+                    int newX = -1, newY = -1;
+                    bool CiboTrovato = false, NuovaPosizioneTrovata = false;
 
-                if (Y > 0)
-                {
-                    await AnalizzaCella(X, Y - 1, informazioni);
-                    if (informazioni.Eliminato || griglia.SimulazioneFinita)
-                        return;
-                }
 
-                if (Y < griglia.Celle.GetLength(1) - 1)
-                {
-                    await AnalizzaCella(X, Y + 1, informazioni);
-                    if (informazioni.Eliminato || griglia.SimulazioneFinita)
-                        return;
-                }
+                    if (Y > 0)
+                    {
+                        AnalizzaCella(X, Y - 1, ref newX, ref newY, ref NuovaPosizioneTrovata, ref CiboTrovato);
+                    }
 
-                if (informazioni.CiboTrovato)
-                {
-                    Vita = 10;
-                    griglia.Celle[informazioni.newX, informazioni.newY].Elimina();
-                    await DiminuisciContatoreCibo();
-                }
+                    if (X > 0)
+                    {
+                        AnalizzaCella(X - 1, Y, ref newX, ref newY, ref NuovaPosizioneTrovata, ref CiboTrovato);
+                    }
 
-                if (informazioni.NuovaPosizioneTrovata)
-                {
-                    int oldX, oldY;
-                    griglia.Celle[informazioni.newX, informazioni.newY].Elemento = this;
-                    griglia.Celle[informazioni.newX, informazioni.newY].AggiornaCella();
-                    griglia.Celle[X, Y].Elimina();
-                    oldX = X;
-                    oldY = Y;
-                    X = informazioni.newX;
-                    Y = informazioni.newY;
-                    griglia.Celle[oldX, oldY].RilasciaAccesso();
-                    griglia.Celle[X, Y].RilasciaAccesso();
-                }
-                else
-                {
-                    griglia.Celle[X, Y].RilasciaAccesso();
-                }
+
+                    if (X < griglia.Celle.GetLength(0) - 1)
+                    {
+                        AnalizzaCella(X + 1, Y, ref newX, ref newY, ref NuovaPosizioneTrovata, ref CiboTrovato);
+                    }
+
+
+                    if (Y < griglia.Celle.GetLength(1) - 1)
+                    {
+                        AnalizzaCella(X, Y + 1, ref newX, ref newY, ref NuovaPosizioneTrovata, ref CiboTrovato);
+                    }
+
+                    if (CiboTrovato)
+                    {
+                        Vita = 10;
+                        griglia.Celle[newX, newY].Elimina();
+                        await DiminuisciContatoreCibo();
+                    }
+
+                    if (NuovaPosizioneTrovata)
+                    {
+                        int oldX, oldY;
+                        griglia.Celle[newX, newY].Elemento = this;
+                        griglia.Celle[newX, newY].AggiornaCella();
+                        griglia.Celle[X, Y].Elimina();
+                        oldX = X;
+                        oldY = Y;
+                        X = newX;
+                        Y = newY;
+                        try
+                        {
+                            griglia.Celle[oldX, oldY].RilasciaAccesso();
+                            griglia.Celle[X, Y].RilasciaAccesso();
+                        }
+                        catch(Exception e)
+                        {
+
+                        }
+
+                    }
+                    else
+                    {
+                        try
+                        {
+                            griglia.Celle[X, Y].RilasciaAccesso();
+                        }
+                        catch (Exception e)
+                        {
+
+                        }
+
+                    }
+                }   
 
                 await Task.Delay(griglia.rnd.Next(500, 1000));
             }
@@ -460,18 +536,57 @@ namespace GameOfLife
             {
                 if (griglia.SimulazioneFinita)
                     return;
-                await griglia.Celle[X, Y].OttieniAccessoAsync();
-                Vita--;
-                griglia.Celle[X, Y].AggiornaCella();
-                if (Vita == 0)
+
+                if (!griglia.SimulazioneInPausa)
                 {
-                    griglia.Celle[X, Y].Elimina();
-                    griglia.Celle[X, Y].RilasciaAccesso();
-                    await DiminuisciContatore();
-                    return;
+                    await vitaMutex.WaitAsync();
+                    Vita--;
+                    int a = X, b = Y;
+                    await griglia.Celle[X, Y].OttieniAccessoAsync();
+                    griglia.Celle[X, Y].AggiornaCella();
+                    try
+                    {
+                        griglia.Celle[X, Y].RilasciaAccesso();
+                    }
+                    catch (Exception e)
+                    {
+
+                    }
+
+                    if (Vita == 0)
+                    {
+                        await griglia.Celle[X, Y].OttieniAccessoAsync();
+                        griglia.Celle[X, Y].Elimina();
+                        try
+                        {
+                            griglia.Celle[X, Y].RilasciaAccesso();
+                        }
+                        catch (Exception e)
+                        {
+
+                        }
+                        try
+                        {
+                            vitaMutex.Release();
+                        }
+                        catch (Exception e)
+                        {
+
+                        }
+                        await DiminuisciContatore();
+                        return;
+                    }
+                    try
+                    {
+                        vitaMutex.Release();
+                    }
+                    catch (Exception e)
+                    {
+
+                    }
                 }
-                griglia.Celle[X, Y].RilasciaAccesso();
-                await Task.Delay(2000);
+                
+                await Task.Delay(1000);
             }
         }
 

@@ -75,7 +75,7 @@
             this.nudConigli.Size = new System.Drawing.Size(145, 29);
             this.nudConigli.TabIndex = 1;
             this.nudConigli.Value = new decimal(new int[] {
-            5,
+            15,
             0,
             0,
             0});
@@ -117,7 +117,7 @@
             this.nudLupi.Size = new System.Drawing.Size(145, 29);
             this.nudLupi.TabIndex = 3;
             this.nudLupi.Value = new decimal(new int[] {
-            2,
+            10,
             0,
             0,
             0});
@@ -148,7 +148,7 @@
             this.nudCarote.Size = new System.Drawing.Size(145, 29);
             this.nudCarote.TabIndex = 5;
             this.nudCarote.Value = new decimal(new int[] {
-            5,
+            15,
             0,
             0,
             0});
@@ -223,7 +223,7 @@
             this.nudWGriglia.Size = new System.Drawing.Size(60, 29);
             this.nudWGriglia.TabIndex = 1;
             this.nudWGriglia.Value = new decimal(new int[] {
-            5,
+            10,
             0,
             0,
             0});
@@ -270,7 +270,7 @@
             this.nudHGriglia.Size = new System.Drawing.Size(60, 29);
             this.nudHGriglia.TabIndex = 1;
             this.nudHGriglia.Value = new decimal(new int[] {
-            5,
+            10,
             0,
             0,
             0});

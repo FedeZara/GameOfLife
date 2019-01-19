@@ -32,6 +32,9 @@ namespace GameOfLife
             Pannello.BackColor = Color.White;
             UCImpostazioni Impostazioni = new UCImpostazioni();
             Impostazioni.Location = new Point(0, 0);
+            Impostazioni.Pausa += Pausa;
+            Impostazioni.Avvia += Avvia;
+            Impostazioni.Stoppa += Stoppa;
             Pannello.Controls.Add(Impostazioni);
             this.Controls.Add(Pannello);
 
@@ -45,7 +48,7 @@ namespace GameOfLife
             IntervalloCarote = intervalloCarote;
             this.AutoSize = true;
             this.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-
+        
             CellePB = new PictureBox[wGriglia, hGriglia];
             for (int x = 0; x < wGriglia; x++)
             {
@@ -107,5 +110,26 @@ namespace GameOfLife
             Risultati.ShowDialog();
             this.Close();
         }     
+
+        public void Pausa(object sender, EventArgs e)
+        {
+            Griglia.Pausa();
+        }
+
+        public void Avvia(object sender, EventArgs e)
+        {
+            Griglia.Avvia();
+        }
+
+        public void Stoppa(object sender, EventArgs e)
+        {
+            Griglia.Stoppa();
+        }
+
+        private void FSimulazione_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if(!Griglia.SimulazioneFinita)
+                Griglia.Stoppa();
+        }
     }
 }

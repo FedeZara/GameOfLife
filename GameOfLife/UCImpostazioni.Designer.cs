@@ -35,7 +35,7 @@
             // btnPlayPause
             // 
             this.btnPlayPause.BackColor = System.Drawing.Color.White;
-            this.btnPlayPause.Image = global::GameOfLife.Properties.Resources.play_button;
+            this.btnPlayPause.Image = global::GameOfLife.Properties.Resources.pause;
             this.btnPlayPause.Location = new System.Drawing.Point(21, 14);
             this.btnPlayPause.Name = "btnPlayPause";
             this.btnPlayPause.Size = new System.Drawing.Size(32, 32);
